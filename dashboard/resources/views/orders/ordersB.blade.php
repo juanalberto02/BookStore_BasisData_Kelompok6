@@ -20,6 +20,7 @@
                 <a class="nav-link" href="/customersB"><i class="far fa-list-alt"></i><span>Customers</span></a>
                 <a class="nav-link" href="/ordersB"><i class="far fa-list-alt"></i><span>Orders</span></a>
                 <a class="nav-link" href="/orderlistB"><i class="far fa-list-alt"></i><span>Order List</span></a>
+                <a class="nav-link" href="/returnB"><i class="far fa-list-alt"></i><span>Return Book</span></a>
             </li>
         </ul>
         <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -65,22 +66,22 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-2 col-xl-2 offset-md-3 offset-xl-4 align-self-center">
-                                                            <button class="btn btn-info btn-sm d-block add-row btn-xs w-100" type="button" style="background: rgb(1,185,225);"><i class="fa fa-plus"></i><strong>&nbsp;Add Book</strong></button>
-                                                        </div>
+                                                            <button class="btn btn-info btn-sm d-block add-row btn-xs w-100" type="button" style="background: rgb(1,185,225); color: white;">
+                                                                <i class="fa fa-plus"></i><strong>&nbsp;Add Book</strong>
+                                                            </button>
+                                                        </div>                                                        
                                                     </div>
                                                     <div class="table-responsive tbl-wfx mt-1 kot-table">
                                                         <table class="table table-sm" id="order-table">
                                                             <thead class="text-dark font-md">
                                                                 <tr class="text-dark-blue">
-                                                                    <th class="text-center w-3x"><strong>#</strong></th>
                                                                     <th><strong>Book Name</strong></th>
                                                                     <th class="w-10x"><strong>Qty.</strong></th>
                                                                     <th class="w-10x"><strong>Sub Total</strong></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody class="h-15x">
-                                                                <tr>
-                                                                    <td class="text-center w-3x pt-2"><input type="checkbox"></td>
+                                                                <tr>                                                                    
                                                                     <td>
                                                                         <div class="mb-1 form-group">
                                                                             <select name="order_details[0][book_id]" class="form-select form-select-sm tbl-wfx kot-table font-sm">
@@ -108,7 +109,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary d-block btn-user w-100" id="add-orders-button" style="background: rgb(78,223,119); margin-right: 20px; margin-left: 31px;">
+                                        <button class="btn btn-primary d-block btn-user w-100" id="add-orders-button" style="background: rgb(78,223,119);">
                                             <i class="fa fa-plus" style="font-size: 15px; margin-right: 2px;"></i>Add Orders
                                         </button>
                                     </form>
@@ -151,7 +152,6 @@
             var newIndex = $("#order-table tbody tr").length; // Get the current number of rows
 
             // Menambahkan indeks baru ke dalam nama elemen
-            cols += '<td class="text-center w-3x pt-2"><input type="checkbox"></td>';
             cols += '<td><div class="mb-1 form-group"><select name="order_details[' + newIndex + '][book_id]" class="form-select form-select-sm tbl-wfx kot-table font-sm">';
             cols += '<option value="" selected>-- Select Product --</option>';
 

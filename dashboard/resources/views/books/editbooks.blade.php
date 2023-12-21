@@ -3,15 +3,6 @@
 @section('form-input')
     <h3 class="text-dark mb-4">Edit Books</h3>
     <div class="row mb-3">
-        <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
-                        src="{{ asset('img/dogs/5.png') }}" width="160" height="160">
-                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="button">Change
-                            Photo</button></div>
-                </div>
-            </div>
-        </div>
         <div class="col-lg-8">
             <div class="row mb-3 d-none">
                 <div class="col">
@@ -92,9 +83,15 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-outline">
-                                        <label class="form-label" for="typeNumber"><strong>Book
-                                                Stock</strong></label>
-                                        <input type="number" id="typeNumber" name="book_stock"
+                                        <label class="form-label" for="typeNumber"><strong>Book Stock A</strong></label>
+                                        <input type="number" id="typeNumber" name="book_stock_A"
+                                            value="{{ $data->book_stock }}" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="typeNumber"><strong>Book Stock B</strong></label>
+                                        <input type="number" id="typeNumber" name="book_stock_B"
                                             value="{{ $data->book_stock }}" class="form-control" />
                                     </div>
                                 </div>

@@ -33,11 +33,11 @@
                     <li class="nav-item"><a class="nav-link" href="/analytics"><i
                                 class="far fa-chart-bar"></i><span>Analytics</span></a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/books_store_A"><i class="far fa-list-alt"></i><span>Books</span></a>
-                        <a class="nav-link" href="/customersA"><i class="fas fa-table"></i><span>Customers</span></a>
-                        <a class="nav-link" href="/ordersA"><i class="far fa-list-alt"></i><span>Orders</span></a>
-                        <a class="nav-link" href="/orderlistA"><i class="far fa-list-alt"></i><span>Order List</span></a>
-                        <a class="nav-link" href="/returnA"><i class="far fa-list-alt"></i><span>Return Book</span></a>
+                        <a class="nav-link" href="/books_store_B"><i class="far fa-list-alt"></i><span>Books</span></a>
+                        <a class="nav-link" href="/customersB"><i class="fas fa-table"></i><span>Customers</span></a>
+                        <a class="nav-link" href="/ordersB"><i class="far fa-list-alt"></i><span>Orders</span></a>
+                        <a class="nav-link" href="/orderlistB"><i class="far fa-list-alt"></i><span>Order List</span></a>
+                        <a class="nav-link" href="/returnB"><i class="far fa-list-alt"></i><span>Return Book</span></a>
                     </li>
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
@@ -107,22 +107,6 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                {{-- <div class="col-md-6 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
-                                        <label class="form-label">Show&nbsp;<select
-                                                class="d-inline-block form-select form-select-sm">
-                                                <option value="10" selected="">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>&nbsp;</label></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-md-end dataTables_filter" id="dataTable_filter"><label
-                                            class="form-label"><input type="search" class="form-control form-control-sm"
-                                                aria-controls="dataTable" placeholder="Search"></label></div>
-                                </div> --}}
-                                @yield('filter')
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">

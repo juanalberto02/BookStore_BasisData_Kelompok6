@@ -109,7 +109,7 @@
                     <td>{{ $row->category->category_name }}</td>
                     <td>{{ $row->book_name }}</td>
                     <td>{{ $row->book_description }}</td>
-                    <td>{{ $row->book_stock }}</td>
+                    <td>{{ $row->book_stock_A + $row->book_stock_B }}</td>
                     <td>{{ $row->book_price }}</td>
                     <td>{{ $row->stores->store_name }}</td>
                     <td>

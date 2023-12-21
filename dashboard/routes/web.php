@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderListController;
 use App\Http\Controllers\OrderDetailsController;
+use App\Http\Controllers\ReturnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,15 @@ Route::group(['middleware' => ['auth','hakakses:master']], function(){
     Route::get('/editbooks/{id}', [BooksController::class, "editbooks"])->name("editbooks");
     Route::post('/updatebooks/{id}', [BooksController::class, "updatebooks"])->name("updatebooks");
     Route::get('/deletebooks/{id}', [BooksController::class, "deletebooks"])->name("deletebooks");
+    Route::get('/return', [ReturnController::class, 'showReturnPage'])->name('return');
+    Route::prefix('returns')->group(function () {
+        Route::post('/accept/{id}', [ReturnController::class, 'accept'])->name('returns.accept');
+        Route::post('/reject/{id}', [ReturnController::class, 'reject'])->name('returns.reject');
+    });
+    // Add this if you want to use the routes with a form method spoofing (e.g., in your blade file)
+    Route::bind('id', function ($id) {
+        return (int) $id;
+    });
 });
 
 Route::group(['middleware' => ['auth','hakakses:userA']], function(){
@@ -64,6 +74,9 @@ Route::group(['middleware' => ['auth','hakakses:userA']], function(){
     Route::get('/orderlistA', [OrderListController::class, 'indexA'])->name('orderlistA');
     Route::get('/ordersA/{id}', 'OrderController@showA')->name('orders.showA');
     Route::get('/orderdetailsA/{id}', [OrderDetailsController::class, 'showA'])->name('orderdetailsA.showA');
+    Route::get('/returnA', [ReturnController::class, 'showReturnAPage'])->name('returnA.showReturnAPage');
+    Route::get('/addreturnA', [ReturnController::class, 'createA'])->name('returnA.create');
+    Route::post('/insertreturnA', [ReturnController::class, 'storeA'])->name('returnA.storeA');
 
 
 
@@ -84,6 +97,9 @@ Route::group(['middleware' => ['auth','hakakses:userB']], function(){
     Route::get('/orderlistB', [OrderListController::class, 'indexB'])->name('orderlistB');
     Route::get('/ordersB/{id}', 'OrderController@showB')->name('orders.showB');
     Route::get('/orderdetailsB/{id}', [OrderDetailsController::class, 'showB'])->name('orderdetailsB.showB');
+    Route::get('/returnB', [ReturnController::class, 'showReturnBPage'])->name('returnB.showReturnBPage');
+    Route::get('/addreturnB', [ReturnController::class, 'createB'])->name('returnB.create');
+    Route::post('/insertreturnB', [ReturnController::class, 'storeB'])->name('returnB.storeB');
 });
 
 

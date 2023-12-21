@@ -24,7 +24,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit" style="background: rgb(28,200,138);width: 68.0625px;height: 38.6px;font-size: 16px;">Add</button></div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary btn-sm" type="submit" style="background: rgb(28,200,138);width: 68.0625px;height: 38.6px;font-size: 16px;margin-left: 20px;">Add</button>
+                                </div>
                             </form>
                         </div>
                     </div>

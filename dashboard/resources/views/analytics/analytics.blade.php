@@ -5,6 +5,7 @@
     <li class="nav-item">
         <a class="nav-link" href="/books"><i class="far fa-list-alt"></i><span>Books</span></a>
         <a class="nav-link" href="/categories"><i class="far fa-list-alt"></i><span>Category</span></a>
+        <a class="nav-link" href="/return"><i class="far fa-list-alt"></i><span>Return Book</span></a>
     </li>
     <li class="nav-item"></li>
     <li class="nav-item"></li>

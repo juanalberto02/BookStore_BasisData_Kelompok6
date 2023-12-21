@@ -29,6 +29,7 @@
                         <a class="nav-link" href="/customers"><i class="far fa-list-alt"></i><span>Customers</span></a>
                         <a class="nav-link" href="/orders"><i class="far fa-list-alt"></i><span>Orders</span></a>
                         <a class="nav-link" href="/orderlist"><i class="far fa-list-alt"></i><span>Order List</span></a>
+                        <a class="nav-link" href="/return"><i class="far fa-list-alt"></i><span>Return Book</span></a>
                     </li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
