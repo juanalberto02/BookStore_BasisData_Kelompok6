@@ -21,7 +21,7 @@ class dataWarehouseController extends Controller
         ->join('dim_times', 'fact_sales.sk_times', '=', 'dim_times.sk_times')
         ->select(
             'fact_sales.*', 
-            'dim_books.book_name', 'dim_books.book_stock_A', 'dim_books.book_stock_B', 'dim_books.book_price', 'dim_books.book_category',
+            'dim_books.book_name', 'dim_books.book_stock', 'dim_books.book_price', 'dim_books.category_name',
             'dim_customers.customer_name', 'dim_customers.email', 'dim_customers.phone', 'dim_customers.address',
             'dim_orders.order_id', 'dim_orders.order_detail_id', 'dim_orders.book_qty', 'dim_orders.subtotal',
             'dim_stores.store_name', 'dim_stores.store_region', 'dim_stores.store_address', 'dim_stores.store_id',

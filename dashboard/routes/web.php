@@ -36,6 +36,7 @@ Route::get('/logout', [LoginController::class,'logout'])->name('logout');
 Route::group(['middleware' => ['auth','hakakses:master']], function(){
     Route::get('/analytics', [AnalyticsController::class, "index"])->name("analytics");
     Route::get('/analytics/filter', [AnalyticsController::class, "index"])->name('analytics.filter');
+    Route::get('/analytics/filter2', [AnalyticsController::class, "index2"])->name('analytics.filter2');
     Route::get('/stores', [StoreController::class, "index"])->name("stores");
     Route::get('/categories', [CategoriesController::class, "index"])->name("categories");
     Route::get('/addcategories', [CategoriesController::class, "addcategories"])->name("addcategories");

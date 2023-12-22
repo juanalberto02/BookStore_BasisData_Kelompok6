@@ -15,7 +15,6 @@
                 <a class="nav-link" href="/customersB"><i class="far fa-list-alt"></i><span>Customers</span></a>
                 <a class="nav-link" href="/ordersB"><i class="far fa-list-alt"></i><span>Orders</span></a>
                 <a class="nav-link" href="/orderlistB"><i class="far fa-list-alt"></i><span>Order List</span></a>
-                <a class="nav-link" href="/returnA"><i class="far fa-list-alt"></i><span>Return Book</span></a>
             </li>
             <li class="nav-item"></li>
             <li class="nav-item"></li>
@@ -126,7 +125,7 @@
                     <td>{{ $row->category->category_name }}</td>
                     <td>{{ $row->book_name }}</td>
                     <td>{{ $row->book_description }}</td>
-                    <td>{{ $row->book_stock_B }}</td>
+                    <td>{{ $row->book_stock }}</td>
                     {{-- <td>{{ $row->store_id }}</td> --}}
                     <td>{{ $row->stores->store_name }}</td>
                     <td>

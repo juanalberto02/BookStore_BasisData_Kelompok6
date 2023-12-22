@@ -15,11 +15,16 @@ class AnalyticsController extends Controller
     {
         $selectedStore = $request->input('store', 1); // Default to store_id 1 if no selection is made
 
-        $totalbooks = books::count();
+        $totalbooks = books::where('store_id', $selectedStore)->count();
 
-        $totalorders = Order::count();
+        $totalorders = Order::where('store_id', $selectedStore)->count();
 
-        $totalrevenue = OrderDetail::sum('subtotal');
+        $totalrevenue = DB::connection('mysql_second')
+                        ->table('fact_sales')
+                        ->where('sk_stores', $selectedStore)
+                        ->sum('Revenue');
+        
+        // DB::connection('mysql_second')->table('fact_sales')
 
         $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
             FROM books
