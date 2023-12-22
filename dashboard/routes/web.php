@@ -7,6 +7,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\dataWarehouseController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderListController;
 use App\Http\Controllers\OrderDetailsController;
@@ -107,7 +108,7 @@ Route::group(['middleware' => ['auth','hakakses:userB']], function(){
 
 Route::get('/add_user', [LoginController::class,'add_user'])->name('add_user');
 Route::post('/add_user_input', [LoginController::class,'add_user_input'])->name('add_user_input');
-
+Route::get('/fact-sales', [dataWarehouseController::class, 'index']);
 
 
 
