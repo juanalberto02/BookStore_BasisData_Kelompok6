@@ -54,6 +54,78 @@ class AnalyticsController extends Controller
         // Count other than 'customer_reguler' for the selected store
         $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
+        // Group by month and count the orders
+        $orderCounts = $combinedData->groupBy(function ($item) {
+            return \Carbon\Carbon::parse($item->created_at)->format('M');
+        })->map(function ($monthData) {
+            return count($monthData);
+        });
+
+        // Prepare data for the chart
+        $chartData = [
+            'labels' => $orderCounts->keys()->toArray(),
+            'datasets' => [
+                [
+                    'label' => 'Orders',
+                    'fill' => true,
+                    'data' => $orderCounts->values()->toArray(),
+                    'backgroundColor' => 'rgba(78, 115, 223, 0.05)',
+                    'borderColor' => 'rgba(78, 115, 223, 1)',
+                ],
+            ],
+        ];
+
+        // Update chart configuration
+        $chartOptions = [
+            'maintainAspectRatio' => false,
+            'legend' => [
+                'display' => false,
+                'labels' => [
+                    'fontStyle' => 'normal',
+                ],
+            ],
+            'title' => [
+                'fontStyle' => 'normal',
+            ],
+            'scales' => [
+                'xAxes' => [
+                    [
+                        'gridLines' => [
+                            'color' => 'rgb(234, 236, 244)',
+                            'zeroLineColor' => 'rgb(234, 236, 244)',
+                            'drawBorder' => false,
+                            'drawTicks' => false,
+                            'borderDash' => ['2'],
+                            'zeroLineBorderDash' => ['2'],
+                            'drawOnChartArea' => false,
+                        ],
+                        'ticks' => [
+                            'fontColor' => '#858796',
+                            'fontStyle' => 'normal',
+                            'padding' => 20,
+                        ],
+                    ],
+                ],
+                'yAxes' => [
+                    [
+                        'gridLines' => [
+                            'color' => 'rgb(234, 236, 244)',
+                            'zeroLineColor' => 'rgb(234, 236, 244)',
+                            'drawBorder' => false,
+                            'drawTicks' => false,
+                            'borderDash' => ['2'],
+                            'zeroLineBorderDash' => ['2'],
+                        ],
+                        'ticks' => [
+                            'fontColor' => '#858796',
+                            'fontStyle' => 'normal',
+                            'padding' => 20,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
             FROM books
             LEFT JOIN categories ON categories.id = books.category_id
@@ -70,7 +142,7 @@ class AnalyticsController extends Controller
 
         
 
-        return view("analytics.analytics", compact('totalbooks', 'pieChartData','totalorders','totalrevenue', 'regulerCount', 'memberCount', 'totalreturn'));
+        return view("analytics.analytics", compact('totalbooks', 'pieChartData','totalorders','totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'selectedStore'));
     }
 
 
