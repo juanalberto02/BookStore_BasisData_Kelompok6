@@ -55,7 +55,7 @@ class AnalyticsController extends Controller
         $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
         // Group by month and count the orders
-        $orderCounts = $combinedData->groupBy(function ($item) {
+        $orderCounts = $filteredData->groupBy(function ($item) {
             return \Carbon\Carbon::parse($item->created_at)->format('M');
         })->map(function ($monthData) {
             return count($monthData);
