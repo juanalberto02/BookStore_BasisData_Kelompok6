@@ -55,86 +55,86 @@ class AnalyticsController extends Controller
         $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
         // Group by month and count the orders for the selected store
-    $orderCounts = $filteredData->groupBy(function ($item) {
-        return \Carbon\Carbon::parse($item->created_at)->format('M');
-    })->sortKeys()->map(function ($monthData) {
-        return count($monthData);
-    });
+        $orderCounts = $filteredData->groupBy(function ($item) {
+            return \Carbon\Carbon::parse($item->created_at)->format('M');
+        })->sortKeys()->map(function ($monthData) {
+            return count($monthData);
+        });
 
-    // Define the correct order of months
-    $monthOrder = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+        // Define the correct order of months
+        $monthOrder = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
 
-    // Sort the months based on the defined order
-    $orderCounts = $orderCounts->sortBy(function ($value, $key) use ($monthOrder) {
-        return array_search($key, $monthOrder);
-    });
+        // Sort the months based on the defined order
+        $orderCounts = $orderCounts->sortBy(function ($value, $key) use ($monthOrder) {
+            return array_search($key, $monthOrder);
+        });
 
-    // Prepare data for the chart
-    $chartData = [
-        'labels' => $orderCounts->keys()->toArray(),
-        'datasets' => [
-            [
-                'label' => 'Orders',
-                'fill' => true,
-                'data' => $orderCounts->values()->toArray(),
-                'backgroundColor' => 'rgba(78, 115, 223, 0.05)',
-                'borderColor' => 'rgba(78, 115, 223, 1)',
+        // Prepare data for the chart
+        $chartData = [
+            'labels' => $orderCounts->keys()->toArray(),
+            'datasets' => [
+                [
+                    'label' => 'Orders',
+                    'fill' => true,
+                    'data' => $orderCounts->values()->toArray(),
+                    'backgroundColor' => 'rgba(78, 115, 223, 0.05)',
+                    'borderColor' => 'rgba(78, 115, 223, 1)',
+                ],
             ],
-        ],
-    ];
+        ];
 
-    // Update chart configuration
-    $chartOptions = [
-        'maintainAspectRatio' => false,
-        'legend' => [
-            'display' => false,
-            'labels' => [
+        // Update chart configuration
+        $chartOptions = [
+            'maintainAspectRatio' => false,
+            'legend' => [
+                'display' => false,
+                'labels' => [
+                    'fontStyle' => 'normal',
+                ],
+            ],
+            'title' => [
                 'fontStyle' => 'normal',
             ],
-        ],
-        'title' => [
-            'fontStyle' => 'normal',
-        ],
-        'scales' => [
-            'xAxes' => [
-                [
-                    'gridLines' => [
-                        'color' => 'rgb(234, 236, 244)',
-                        'zeroLineColor' => 'rgb(234, 236, 244)',
-                        'drawBorder' => false,
-                        'drawTicks' => false,
-                        'borderDash' => ['2'],
-                        'zeroLineBorderDash' => ['2'],
-                        'drawOnChartArea' => false,
+            'scales' => [
+                'xAxes' => [
+                    [
+                        'gridLines' => [
+                            'color' => 'rgb(234, 236, 244)',
+                            'zeroLineColor' => 'rgb(234, 236, 244)',
+                            'drawBorder' => false,
+                            'drawTicks' => false,
+                            'borderDash' => ['2'],
+                            'zeroLineBorderDash' => ['2'],
+                            'drawOnChartArea' => false,
+                        ],
+                        'ticks' => [
+                            'fontColor' => '#858796',
+                            'fontStyle' => 'normal',
+                            'padding' => 20,
+                        ],
                     ],
-                    'ticks' => [
-                        'fontColor' => '#858796',
-                        'fontStyle' => 'normal',
-                        'padding' => 20,
+                ],
+                'yAxes' => [
+                    [
+                        'gridLines' => [
+                            'color' => 'rgb(234, 236, 244)',
+                            'zeroLineColor' => 'rgb(234, 236, 244)',
+                            'drawBorder' => false,
+                            'drawTicks' => false,
+                            'borderDash' => ['2'],
+                            'zeroLineBorderDash' => ['2'],
+                        ],
+                        'ticks' => [
+                            'fontColor' => '#858796',
+                            'fontStyle' => 'normal',
+                            'padding' => 20,
+                        ],
                     ],
                 ],
             ],
-            'yAxes' => [
-                [
-                    'gridLines' => [
-                        'color' => 'rgb(234, 236, 244)',
-                        'zeroLineColor' => 'rgb(234, 236, 244)',
-                        'drawBorder' => false,
-                        'drawTicks' => false,
-                        'borderDash' => ['2'],
-                        'zeroLineBorderDash' => ['2'],
-                    ],
-                    'ticks' => [
-                        'fontColor' => '#858796',
-                        'fontStyle' => 'normal',
-                        'padding' => 20,
-                    ],
-                ],
-            ],
-        ],
-    ];
+        ];
 
         $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
             FROM books
