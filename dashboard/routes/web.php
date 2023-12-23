@@ -7,6 +7,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\dataWarehouseController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderListController;
 use App\Http\Controllers\OrderDetailsController;
@@ -35,6 +36,7 @@ Route::get('/logout', [LoginController::class,'logout'])->name('logout');
 Route::group(['middleware' => ['auth','hakakses:master']], function(){
     Route::get('/analytics', [AnalyticsController::class, "index"])->name("analytics");
     Route::get('/analytics/filter', [AnalyticsController::class, "index"])->name('analytics.filter');
+    Route::get('/analytics/filter2', [AnalyticsController::class, "index2"])->name('analytics.filter2');
     Route::get('/stores', [StoreController::class, "index"])->name("stores");
     Route::get('/categories', [CategoriesController::class, "index"])->name("categories");
     Route::get('/addcategories', [CategoriesController::class, "addcategories"])->name("addcategories");
@@ -107,7 +109,7 @@ Route::group(['middleware' => ['auth','hakakses:userB']], function(){
 
 Route::get('/add_user', [LoginController::class,'add_user'])->name('add_user');
 Route::post('/add_user_input', [LoginController::class,'add_user_input'])->name('add_user_input');
-
+Route::get('/fact-sales', [dataWarehouseController::class, 'index']);
 
 
 
