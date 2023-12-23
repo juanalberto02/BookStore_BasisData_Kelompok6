@@ -15,6 +15,22 @@ class AnalyticsController extends Controller
     {
         $selectedStore = $request->input('store', 1); // Default to store_id 1 if no selection is made
 
+        $combinedData = DB::connection('mysql_second')->table('fact_sales')
+        ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+        ->join('dim_customers', 'fact_sales.sk_customers', '=', 'dim_customers.sk_customers')
+        ->join('dim_orders', 'fact_sales.sk_order', '=', 'dim_orders.sk_order')
+        ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+        ->join('dim_times', 'fact_sales.sk_times', '=', 'dim_times.sk_times')
+        ->select(
+            'fact_sales.*', 
+            'dim_books.book_name', 'dim_books.book_stock', 'dim_books.book_price', 'dim_books.category_name',
+            'dim_customers.customer_name', 'dim_customers.email', 'dim_customers.phone', 'dim_customers.address',
+            'dim_orders.order_id', 'dim_orders.order_detail_id', 'dim_orders.book_qty', 'dim_orders.subtotal',
+            'dim_stores.store_name', 'dim_stores.store_region', 'dim_stores.store_address', 'dim_stores.store_id',
+            'dim_times.day', 'dim_times.month_name', 'dim_times.year', 'dim_times.created_at'
+        )
+        ->get();
+
         $totalbooks = books::where('store_id', $selectedStore)->count();
 
         $totalorders = Order::where('store_id', $selectedStore)->count();
@@ -23,8 +39,20 @@ class AnalyticsController extends Controller
                         ->table('fact_sales')
                         ->where('sk_stores', $selectedStore)
                         ->sum('Revenue');
+
+        $totalreturn = DB::connection('mysql')
+                        ->table('returns')
+                        ->where('store_id', $selectedStore)
+                        ->count();
         
-        // DB::connection('mysql_second')->table('fact_sales')
+        // Filter the data based on the selected store_id
+        $filteredData = $combinedData->where('store_id', $selectedStore);
+
+        // Count 'customer_reguler' for the selected store
+        $regulerCount = $filteredData->where('customer_name', 'Customer Reguler')->count();
+
+        // Count other than 'customer_reguler' for the selected store
+        $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
         $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
             FROM books
@@ -42,7 +70,7 @@ class AnalyticsController extends Controller
 
         
 
-        return view("analytics.analytics", compact('totalbooks', 'pieChartData','totalorders','totalrevenue'));
+        return view("analytics.analytics", compact('totalbooks', 'pieChartData','totalorders','totalrevenue', 'regulerCount', 'memberCount', 'totalreturn'));
     }
 
 
