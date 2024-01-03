@@ -54,11 +54,21 @@ class AnalyticsController extends Controller
         // Count other than 'customer_reguler' for the selected store
         $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
-        // Group by month and count the orders
+        // Group by month and count the orders for the selected store
         $orderCounts = $filteredData->groupBy(function ($item) {
             return \Carbon\Carbon::parse($item->created_at)->format('M');
-        })->map(function ($monthData) {
+        })->sortKeys()->map(function ($monthData) {
             return count($monthData);
+        });
+
+        // Define the correct order of months
+        $monthOrder = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+
+        // Sort the months based on the defined order
+        $orderCounts = $orderCounts->sortBy(function ($value, $key) use ($monthOrder) {
+            return array_search($key, $monthOrder);
         });
 
         // Prepare data for the chart
