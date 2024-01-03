@@ -143,9 +143,12 @@ class AnalyticsController extends Controller
             GROUP BY books.category_id, categories.category_name
         ");
 
-        $data_books_categories_A = "";
+        $data_books_categories_A = [];
         foreach ($results as $result) {
-            $data_books_categories_A .= "['" . $result->category_name . "', " . $result->bookName . "],";
+            $data_books_categories_A [] = [
+                'name' => $result->category_name, 
+                'value' => $result->bookName
+            ];
         }
 
         $pieChartData = $data_books_categories_A;
