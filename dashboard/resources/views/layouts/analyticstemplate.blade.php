@@ -5,15 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Brand</title>
-    <link rel="stylesheet" href="{{asset('bootstrap/css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('fonts/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('fonts/font-awesome.min.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('fonts/fontawesome5-overrides.min.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('css/Tricky-Grid---2-Column-on-Desktop--Tablet-Flip-Order-of-12-Column-rows-on-Mobile.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/fontawesome5-overrides.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/chart.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('css/Tricky-Grid---2-Column-on-Desktop--Tablet-Flip-Order-of-12-Column-rows-on-Mobile.css') }}">
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
+    {{-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> --}}
+    <!-- Include ECharts library -->
+    {{-- <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
 
@@ -21,7 +25,7 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Category Name', 'Books Count'],
-          <?php echo $pieChartData; ?>
+          <//php echo $pieChartData; ?>
         ]);
 
         var options = {
@@ -32,14 +36,15 @@
 
         chart.draw(data, options);
       }
-    </script>
+    </script> --}}
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark">
             <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+                    href="#">
                     {{-- <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div> --}}
                     <div class="sidebar-brand-text mx-3"><span>Analytics</span></div>
                 </a>
@@ -88,7 +93,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{Auth::user()->name}}</span><img
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{ Auth::user()->name }}</span><img
                                             class="border rounded-circle img-profile"
                                             src="{{ asset('assets/img/avatars/4.jpg') }}"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
@@ -346,6 +351,58 @@
     <script src="{{ asset('js/chart.min.js') }}"></script>
     <script src="{{ asset('js/bs-init.js') }}"></script>
     <script src="{{ asset('js/theme.js') }}"></script>
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var data = {!! json_encode($pieChartData) !!}; // Assuming $pieChartData is the data for your pie chart
+
+            var dom = document.getElementById('piechart');
+            var myChart = echarts.init(dom);
+
+            var option = {
+                title: {
+                    text: '',
+                    left: 'center',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '({d}%)',
+                },
+                legend: {
+                    orient: "vertical",
+                    left: "left",
+                },
+                series: [{
+                    name: 'Category Name',
+                    type: 'pie',
+                    radius: '50%',
+                    data: @json($pieChartData),
+                    label: {
+                        show: true,
+                        formatter: '{b}', // Display data labels with values
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                }, ],
+            };
+
+
+            myChart.setOption(option);
+
+            // Resize chart when the window is resized
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>

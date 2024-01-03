@@ -128,7 +128,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-7 col-xl-8">
+        <div class="col-lg-6 col-xl-7">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Monthly Order</h6>
@@ -151,7 +151,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-5 col-xl-4">
+        <div class="col-lg-6 col-xl-5">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Books Genre</h6>
@@ -169,7 +169,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="piechart" style="width: 350px; height: 250px;"></div>
+                    <div id="piechart" style="width: 500px; height: 320px;"></div>
                 </div>
             </div>
         </div>
