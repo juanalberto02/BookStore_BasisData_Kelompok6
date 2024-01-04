@@ -13,7 +13,8 @@ class AnalyticsController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedStore = $request->input('store', 1); // Default to store_id 1 if no selection is made
+        //$selectedStore = $request->input('store', 1); // Default to store_id 1 if no selection is made
+        $selectedStore = $request->input('store', 'all'); // Default to store_id 1 if no selection is made
 
         $combinedData = DB::connection('mysql_second')->table('fact_sales')
             ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
@@ -46,30 +47,48 @@ class AnalyticsController extends Controller
             )
             ->get();
 
-        $totalbooks = books::where('store_id', $selectedStore)->count();
+        if ($selectedStore == 'all') {
+            // Aggregate data from all stores
+            $totalbooks = books::count();
+            $totalorders = Order::count();
+            $totalrevenue = DB::connection('mysql_second')->table('fact_sales')->sum('Revenue');
+            $totalreturn = DB::connection('mysql')->table('returns')->count();
+            $filteredData = $combinedData;
 
-        $totalorders = Order::where('store_id', $selectedStore)->count();
+            // Count 'customer_reguler' for the selected store
+            $regulerCount = $filteredData->where('customer_name', 'Customer Reguler')->count();
 
-        $totalrevenue = DB::connection('mysql_second')
-            ->table('fact_sales')
-            ->where('sk_stores', $selectedStore)
-            ->sum('Revenue');
+            // Count other than 'customer_reguler' for the selected store
+            $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
-        $totalreturn = DB::connection('mysql')
-            ->table('returns')
-            ->where('store_id', $selectedStore)
-            ->count();
+            $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
+            FROM books
+            LEFT JOIN categories ON categories.id = books.category_id
+            GROUP BY books.category_id, categories.category_name
+        ");
 
-        // Filter the data based on the selected store_id
-        $filteredData = $combinedData->where('store_id', $selectedStore);
+        } else {
+            // Existing logic for individual stores
+            $totalbooks = books::where('store_id', $selectedStore)->count();
+            $totalorders = Order::where('store_id', $selectedStore)->count();
+            $totalrevenue = DB::connection('mysql_second')->table('fact_sales')->where('sk_stores', $selectedStore)->sum('Revenue');
+            $totalreturn = DB::connection('mysql')->table('returns')->where('store_id', $selectedStore)->count();
+            $filteredData = $combinedData->where('store_id', $selectedStore);
 
-        // Count 'customer_reguler' for the selected store
-        $regulerCount = $filteredData->where('customer_name', 'Customer Reguler')->count();
+            // Count 'customer_reguler' for the selected store
+            $regulerCount = $filteredData->where('customer_name', 'Customer Reguler')->count();
 
-        // Count other than 'customer_reguler' for the selected store
-        $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
+            // Count other than 'customer_reguler' for the selected store
+            $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
-        // Group by month and count the orders for the selected store
+            $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
+            FROM books
+            LEFT JOIN categories ON categories.id = books.category_id
+            WHERE books.store_id = $selectedStore
+            GROUP BY books.category_id, categories.category_name
+        ");
+        }
+
         $orderCounts = $filteredData->groupBy(function ($item) {
             return \Carbon\Carbon::parse($item->created_at)->format('M');
         })->sortKeys()->map(function ($monthData) {
@@ -151,24 +170,15 @@ class AnalyticsController extends Controller
             ],
         ];
 
-        $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
-            FROM books
-            LEFT JOIN categories ON categories.id = books.category_id
-            WHERE books.store_id = $selectedStore
-            GROUP BY books.category_id, categories.category_name
-        ");
-
-        $data_books_categories_A = [];
+        $data_books_categories = [];
         foreach ($results as $result) {
-            $data_books_categories_A[] = [
+            $data_books_categories[] = [
                 'name' => $result->category_name,
                 'value' => $result->bookName
             ];
         }
 
-        $pieChartData = $data_books_categories_A;
-
-
+        $pieChartData = $data_books_categories;
 
         return view("analytics.analytics", compact('totalbooks', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'selectedStore'));
     }

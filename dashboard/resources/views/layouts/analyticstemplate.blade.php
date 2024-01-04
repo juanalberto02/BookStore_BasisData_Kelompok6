@@ -342,7 +342,7 @@
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Brand 2023</span></div>
+                    <div class="text-center my-auto copyright"><span>Basis Data Kelompok 6</span></div>
                 </div>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
@@ -357,6 +357,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             var data = {!! json_encode($pieChartData) !!}; // Assuming $pieChartData is the data for your pie chart
 
+            // Define category to color mapping
+            var categoryColors = {
+                'Non-Fiction': '#5C7AEA', // Pastel Dark Blue
+                'Mystery': '#6CD4A3',     // Pastel Light Green
+                'Science Fiction': '#FBE199', // Pastel Yellow
+                'Romance': '#FAA485',         // Pastel Orange
+                'Fantasy': '#F9BAC8',         // Pastel Pink
+            };
+
+            // Apply colors to the data items
+            for (var i = 0; i < data.length; i++) {
+                var categoryName = data[i]['name'];
+                var color = categoryColors[categoryName] || '#DDDDDD'; // Default color if not found
+                data[i]['itemStyle'] = {
+                    color: color
+                };
+            }
+
             var dom = document.getElementById('piechart');
             var myChart = echarts.init(dom);
 
@@ -370,17 +388,17 @@
                     formatter: '({d}%)',
                 },
                 legend: {
-                    orient: "vertical",
-                    left: "left",
+                    orient: "horizontal",
+                    left: "center",
                 },
                 series: [{
                     name: 'Category Name',
                     type: 'pie',
-                    radius: '50%',
-                    data: @json($pieChartData),
+                    radius: '60%',
+                    data: data,
                     label: {
                         show: true,
-                        formatter: '{b}', // Display data labels with values
+                        formatter: '{b} \n({d}%)', // Display data labels with values
                     },
                     emphasis: {
                         itemStyle: {
