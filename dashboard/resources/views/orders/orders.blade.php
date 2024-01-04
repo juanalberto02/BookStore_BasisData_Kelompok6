@@ -50,7 +50,7 @@
                                         <div class="col">
                                             <div class="card shadow-sm mb-2 db-graph">
                                                 <div class="card-header p-2">
-                                                    <h6 class="text-white m-0 font-md">Add New Order</h6>
+                                                    <h6 class="text-blue m-0 font-md">Add New Order</h6>
                                                 </div>
                                                 <div class="card-body">
                                                     <form method="POST" action="{{ route('order.add') }}">

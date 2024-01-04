@@ -26,8 +26,8 @@
                                     <label for="store" class="mr-2 mb-2">Select Store:</label>
                                     <select name="store" id="store" class="form-control mb-2">
                                         <option value="all" {{ request('store') == 'all' ? 'selected' : '' }}>All Stores</option>
-                                        <option value="1" {{ request('store') == 1 ? 'selected' : '' }}>Store 1</option>
-                                        <option value="2" {{ request('store') == 2 ? 'selected' : '' }}>Store 2</option>
+                                        <option value="1" {{ request('store') == 1 ? 'selected' : '' }}>Store A</option>
+                                        <option value="2" {{ request('store') == 2 ? 'selected' : '' }}>Store B</option>
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary ml-2">Apply Filter</button>
