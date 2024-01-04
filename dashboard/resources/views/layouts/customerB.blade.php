@@ -30,7 +30,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/analytics"><i
+                    <li class="nav-item"><a class="nav-link" href="/analytics_store_B"><i
                                 class="far fa-chart-bar"></i><span>Analytics</span></a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="/books_store_B"><i class="far fa-list-alt"></i><span>Books</span></a>

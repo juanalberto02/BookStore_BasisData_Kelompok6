@@ -5,15 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Brand</title>
-    <link rel="stylesheet" href="{{asset('bootstrap/css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('fonts/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('fonts/font-awesome.min.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('fonts/fontawesome5-overrides.min.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('css/Tricky-Grid---2-Column-on-Desktop--Tablet-Flip-Order-of-12-Column-rows-on-Mobile.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/fontawesome5-overrides.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/chart.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('css/Tricky-Grid---2-Column-on-Desktop--Tablet-Flip-Order-of-12-Column-rows-on-Mobile.css') }}">
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
+    {{-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> --}}
+    <!-- Include ECharts library -->
+    {{-- <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
 
@@ -21,7 +25,7 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Category Name', 'Books Count'],
-          <?php echo $pieChartData; ?>
+          <//php echo $pieChartData; ?>
         ]);
 
         var options = {
@@ -32,14 +36,15 @@
 
         chart.draw(data, options);
       }
-    </script>
+    </script> --}}
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark">
             <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+                    href="#">
                     {{-- <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div> --}}
                     <div class="sidebar-brand-text mx-3"><span>Analytics</span></div>
                 </a>
@@ -88,7 +93,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{Auth::user()->name}}</span><img
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{ Auth::user()->name }}</span><img
                                             class="border rounded-circle img-profile"
                                             src="{{ asset('assets/img/avatars/4.jpg') }}"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
@@ -337,7 +342,7 @@
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Brand 2023</span></div>
+                    <div class="text-center my-auto copyright"><span>Basis Data Kelompok 6</span></div>
                 </div>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
@@ -346,6 +351,296 @@
     <script src="{{ asset('js/chart.min.js') }}"></script>
     <script src="{{ asset('js/bs-init.js') }}"></script>
     <script src="{{ asset('js/theme.js') }}"></script>
+    <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var data = {!! json_encode($pieChartData) !!}; // Assuming $pieChartData is the data for your pie chart
+
+            // Define category to color mapping
+            var categoryColors = {
+                'Non-Fiction': '#5C7AEA', // Pastel Dark Blue
+                'Mystery': '#6CD4A3',     // Pastel Light Green
+                'Science Fiction': '#FBE199', // Pastel Yellow
+                'Romance': '#FAA485',         // Pastel Orange
+                'Fantasy': '#F9BAC8',         // Pastel Pink
+            };
+
+            // Apply colors to the data items
+            for (var i = 0; i < data.length; i++) {
+                var categoryName = data[i]['name'];
+                var color = categoryColors[categoryName] || '#DDDDDD'; // Default color if not found
+                data[i]['itemStyle'] = {
+                    color: color
+                };
+            }
+
+            var dom = document.getElementById('piechart');
+            var myChart = echarts.init(dom);
+
+            var option = {
+                title: {
+                    text: '',
+                    left: 'center',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '({d}%)',
+                },
+                legend: {
+                    orient: "horizontal",
+                    left: "center",
+                },
+                series: [{
+                    name: 'Category Name',
+                    type: 'pie',
+                    radius: '60%',
+                    data: data,
+                    label: {
+                        show: true,
+                        formatter: '{b} \n({d}%)', // Display data labels with values
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                }, ],
+            };
+
+
+            myChart.setOption(option);
+
+            // Resize chart when the window is resized
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+    </script>
+
+
+    <script>
+        var dom = document.getElementById('category-revenue');
+        var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        option = {
+            legend: {
+                top: 'bottom'
+            },
+            series: [
+                {
+                    name: 'Nightingale Chart',
+                    type: 'pie',
+                    radius: [50, 100],
+                    center: ['50%', '50%'],
+                    roseType: 'area',
+                    label: {
+                        show: true,
+                        formatter: function(params) {
+                            return params.name + '\n' + params.percent + '%\n' + params.value;
+                        },
+                    },
+                    itemStyle: {
+                        borderRadius: 8,
+                        color: function(params) {
+                            var colorMap = {
+                                'Non-Fiction': '#5C7AEA',       // Pastel Dark Blue
+                                'Mystery': '#6CD4A3',           // Pastel Light Green
+                                'Science Fiction': '#FBE199',   // Pastel Yellow
+                                'Romance': '#FAA485',           // Pastel Orange
+                                'Fantasy': '#F9BAC8'            // Pastel Pink
+                            };
+                            return colorMap[params.name] || '#999';  // Default color
+                        }
+                    },
+                    data: {!! $pieChartDataRevenueJson !!}
+                }
+            ]
+        };
+
+
+
+        if (option && typeof option === 'object') {
+        myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    </script>
+
+    <script>
+        var dom = document.getElementById('chart-categories');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+
+        var categorySumData = {!! $categorySumJson !!};
+
+        // Urutkan categorySumData berdasarkan nilai 'value' secara descending
+        categorySumData.sort(function(a, b) {
+            return b.value - a.value;
+        });
+
+        var initialOption = {
+            xAxis: {
+                data: categorySumData.map(function(item) {
+                    return item.groupId;
+                })
+            },
+            yAxis: {},
+            dataGroupId: '',
+            animationDurationUpdate: 500,
+            series: {
+                type: 'bar',
+                id: 'sales',
+                data: categorySumData,
+                itemStyle: {
+                    color: function (params) {
+                        var colorMap = {
+                            'Non-Fiction': '#5C7AEA',
+                            'Mystery': '#6CD4A3',
+                            'Science Fiction': '#FBE199',
+                            'Romance': '#FAA485',
+                            'Fantasy': '#F9BAC8'
+                        };
+                        return colorMap[params.data.groupId];
+                    }
+                },
+                universalTransition: {
+                    enabled: true,
+                    divideShape: 'clone'
+                }
+            }
+        };
+
+        // Urutkan categorySumData berdasarkan nilai 'value' secara descending
+        categorySumData.sort(function(a, b) {
+            return b.value - a.value;
+        });
+
+        // ...
+
+        const drilldownData = [
+            {
+                dataGroupId: 'Science Fiction',
+                data: {!! $scienceFictionSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Fantasy',
+                data: {!! $fantasySalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Romance',
+                data: {!! $romanceSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Non-Fiction',
+                data: {!! $nonFictionSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Mystery',
+                data: {!! $mysterySalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            }
+        ];
+
+        myChart.on('click', function (event) {
+            if (event.data) {
+                var subData = drilldownData.find(function (data) {
+                    return data.dataGroupId === event.data.groupId;
+                });
+                if (subData) {
+                    var modifiedOption = {
+                        xAxis: {
+                            data: subData.data.map(function (item) {
+                                // Mengambil hanya 4 huruf pertama dari judul buku
+                                var truncatedTitle = item[0].substring(0, 6);
+
+                                // Menambahkan tanda titik-titik jika judul lebih panjang dari 4 huruf
+                                truncatedTitle = item[0].length > 4 ? truncatedTitle + '..' : truncatedTitle;
+
+                                return truncatedTitle;
+                            })
+                        },
+                        series: {
+                            type: 'bar',
+                            id: 'sales',
+                            dataGroupId: subData.dataGroupId,
+                            data: subData.data.map(function (item) {
+                                return {
+                                    value: item[1],
+                                    groupId: event.data.groupId
+                                };
+                            }),
+                            universalTransition: {
+                                enabled: true,
+                                divideShape: 'clone'
+                            }
+                        },
+                        graphic: [
+                            {
+                                type: 'text',
+                                left: 50,
+                                top: 20,
+                                style: {
+                                    text: 'Categories',
+                                    fontSize: 14,
+                                    color: '#6CD4A3',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                },
+                                onclick: function () {
+                                    myChart.setOption(initialOption);
+                                }
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(modifiedOption);
+                }
+            } else {
+                var existingGraphic = myChart.getModel().getOption().graphic;
+                if (existingGraphic) {
+                    existingGraphic.splice(0, 1);
+                    myChart.setOption({
+                        graphic: existingGraphic
+                    });
+                }
+            }
+        });
+
+        if (initialOption && typeof initialOption === 'object') {
+            myChart.setOption(initialOption);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    </script>
+
+
+
+
+
+
+
 </body>
 
 </html>

@@ -25,6 +25,7 @@
                                 <div class="form-group" style="margin-bottom: 60px;">
                                     <label for="store" class="mr-2 mb-2">Select Store:</label>
                                     <select name="store" id="store" class="form-control mb-2">
+                                        <option value="all" {{ request('store') == 'all' ? 'selected' : '' }}>All Stores</option>
                                         <option value="1" {{ request('store') == 1 ? 'selected' : '' }}>Store 1</option>
                                         <option value="2" {{ request('store') == 2 ? 'selected' : '' }}>Store 2</option>
                                     </select>
@@ -128,7 +129,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-7 col-xl-8">
+        <div class="col-lg-6 col-xl-7">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Monthly Order</h6>
@@ -151,7 +152,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-5 col-xl-4">
+        <div class="col-lg-6 col-xl-5">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary fw-bold m-0">Books Genre</h6>
@@ -169,7 +170,54 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="piechart" style="width: 350px; height: 250px;"></div>
+                    <div id="piechart" style="width: 110%; height: 320px;margin-left:-5%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-xl-5">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Revenue per Category</h6>
+                    <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
+                            aria-expanded="false" data-bs-toggle="dropdown" type="button"><i
+                                class="fas fa-ellipsis-v text-gray-400"></i></button>
+                        <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item"
+                                href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another
+                                action</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something
+                                else
+                                here</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="category-revenue" style="width: 110%; height: 320px;margin-left:-5%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-xl-7">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="text-primary fw-bold m-0">Total Orders per Category</h6>
+                    <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false"
+                            data-bs-toggle="dropdown" type="button"><i
+                                class="fas fa-ellipsis-v text-gray-400"></i></button>
+                        <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
+                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item"
+                                href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another
+                                action</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something else
+                                here</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <div id="chart-categories" style="width: 100%; height: 350px;"></div>
+                    </div>                    
                 </div>
             </div>
         </div>
