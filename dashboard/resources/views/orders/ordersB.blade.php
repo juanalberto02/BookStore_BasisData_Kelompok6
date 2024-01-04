@@ -7,8 +7,7 @@
 @section('sidebar')
 <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark">
     <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-            <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
-            <div class="sidebar-brand-text mx-3"><span>Brand</span></div> <!-- Perbaikan di sini, menghilangkan spasi ekstra -->
+            <div class="sidebar-brand-text mx-3"><span>Analytics</span></div> <!-- Perbaikan di sini, menghilangkan spasi ekstra -->
         </a>
         <hr class="sidebar-divider my-0">
         <ul class="navbar-nav text-light" id="accordionSidebar">
@@ -42,7 +41,7 @@
                         <div class="col">
                             <div class="card shadow-sm mb-2 db-graph">
                                 <div class="card-header p-2">
-                                    <h6 class="text-white m-0 font-md">Add New Order</h6>
+                                    <h6 class="text-blue m-0 font-md">Add New Order</h6>
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" action="{{ route('orderB.addB') }}">
