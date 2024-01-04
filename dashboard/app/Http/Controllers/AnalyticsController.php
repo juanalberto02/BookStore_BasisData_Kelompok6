@@ -58,14 +58,109 @@ class AnalyticsController extends Controller
             // Count 'customer_reguler' for the selected store
             $regulerCount = $filteredData->where('customer_name', 'Customer Reguler')->count();
 
-            // Count other than 'customer_reguler' for the selected store
+        // Count other than 'customer_reguler' for the selected store
             $memberCount = $filteredData->where('customer_name', '!=', 'Customer Reguler')->count();
 
             $results = DB::select("SELECT COUNT(books.book_name) AS bookName, categories.category_name
             FROM books
             LEFT JOIN categories ON categories.id = books.category_id
-            GROUP BY books.category_id, categories.category_name
-        ");
+            GROUP BY books.category_id, categories.category_name");
+
+
+
+           // Mendapatkan data jumlah revenue per kategori
+            $categoryRevenueData = DB::connection('mysql_second')
+                ->table('fact_sales')
+                ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+                ->selectRaw('SUM(fact_sales.Revenue) as revenue, dim_books.category_name')
+                ->groupBy('dim_books.category_name')
+                ->get();
+
+           // Konversi data menjadi format yang sesuai untuk chart
+           $pieChartDataRevenue = $categoryRevenueData->map(function ($item) {
+           return [
+               'value' => $item->revenue,
+               'name' => $item->category_name,
+           ];
+           });
+
+           // Convert $pieChartDataRevenue to JSON
+           $pieChartDataRevenueJson = $pieChartDataRevenue->toJson();
+
+           $categoryOrderSumData = DB::connection('mysql_second')
+            ->table('fact_sales')
+            ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+            ->join('dim_orders', 'fact_sales.sk_order', '=', 'dim_orders.sk_order')
+            ->selectRaw('SUM(dim_orders.book_qty) as total_book_qty, dim_books.category_name')
+            ->groupBy('dim_books.category_name')
+            ->get();
+
+            $categorySum = $categoryOrderSumData->map(function ($item) {
+            return [
+                'value' => $item->total_book_qty,
+                'groupId' => $item->category_name,
+            ];
+            });
+
+            // Convert $categorySum to JSON
+            $categorySumJson = json_encode($categorySum);
+
+            $scienceFictionSalesData = $combinedData
+                ->where('category_name', 'Science Fiction')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();  
+
+            $romanceSalesData = $combinedData
+                ->where('category_name', 'Romance')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();  
+            
+            $fantasySalesData = $combinedData
+                ->where('category_name', 'Fantasy')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+            
+            $nonFictionSalesData = $combinedData
+                ->where('category_name', 'Non-Fiction')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+            
+            $mysterySalesData = $combinedData
+                ->where('category_name', 'Mystery')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+
+
+            // Convert $scienceFictionSalesData to JSON
+            $scienceFictionSalesJson = json_encode($scienceFictionSalesData);
+            $romanceSalesJson = json_encode($romanceSalesData);
+            $fantasySalesJson = json_encode($fantasySalesData);
+            $nonFictionSalesJson = json_encode($nonFictionSalesData);
+            $mysterySalesJson = json_encode($mysterySalesData);
+
+            // Dump the contents of $scienceFictionSalesJson and stop the script execution
+            //dd($categoryCount);
+
 
         } else {
             // Existing logic for individual stores
@@ -85,8 +180,105 @@ class AnalyticsController extends Controller
             FROM books
             LEFT JOIN categories ON categories.id = books.category_id
             WHERE books.store_id = $selectedStore
-            GROUP BY books.category_id, categories.category_name
-        ");
+            GROUP BY books.category_id, categories.category_name");
+
+            //$selectedStore = 1; // Gantilah dengan nilai toko yang sesuai
+
+            $categoryRevenueData = DB::connection('mysql_second')
+                ->table('fact_sales')
+                ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+                ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+                ->selectRaw('SUM(fact_sales.Revenue) as revenue, dim_books.category_name')
+                ->where('dim_stores.store_id', $selectedStore)
+                ->groupBy('dim_books.category_name')
+                ->get();
+
+            $pieChartDataRevenue = $categoryRevenueData->map(function ($item) {
+                return [
+                    'value' => $item->revenue,
+                    'name' => $item->category_name,
+                ];
+            });
+
+            $pieChartDataRevenueJson = $pieChartDataRevenue->toJson();
+
+            $categoryOrderSumData = DB::connection('mysql_second')
+                ->table('fact_sales')
+                ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+                ->join('dim_orders', 'fact_sales.sk_order', '=', 'dim_orders.sk_order')
+                ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+                ->selectRaw('SUM(dim_orders.book_qty) as total_book_qty, dim_books.category_name')
+                ->where('dim_stores.store_id', $selectedStore)
+                ->groupBy('dim_books.category_name')
+                ->get();
+
+            $categorySum = $categoryOrderSumData->map(function ($item) {
+                return [
+                    'value' => $item->total_book_qty,
+                    'groupId' => $item->category_name,
+                ];
+            });
+
+            $categorySumJson = $categorySum->toJson();
+
+            $scienceFictionSalesData = $combinedData
+                ->where('store_id', $selectedStore)
+                ->where('category_name', 'Science Fiction')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();  
+
+            $romanceSalesData = $combinedData
+                ->where('store_id', $selectedStore)
+                ->where('category_name', 'Romance')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();  
+                
+            $fantasySalesData = $combinedData
+                ->where('store_id', $selectedStore)
+                ->where('category_name', 'Fantasy')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+                
+            $nonFictionSalesData = $combinedData
+                ->where('store_id', $selectedStore)
+                ->where('category_name', 'Non-Fiction')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+                
+            $mysterySalesData = $combinedData
+                ->where('store_id', $selectedStore)
+                ->where('category_name', 'Mystery')
+                ->groupBy('book_name')
+                ->map(function ($salesData, $bookName) {
+                    return [$bookName, $salesData->sum('book_qty')];
+                })
+                ->values()
+                ->toArray();
+
+
+            // Convert $scienceFictionSalesData to JSON
+            $scienceFictionSalesJson = json_encode($scienceFictionSalesData);
+            $romanceSalesJson = json_encode($romanceSalesData);
+            $fantasySalesJson = json_encode($fantasySalesData);
+            $nonFictionSalesJson = json_encode($nonFictionSalesData);
+            $mysterySalesJson = json_encode($mysterySalesData);
+            
         }
 
         $orderCounts = $filteredData->groupBy(function ($item) {
@@ -180,7 +372,10 @@ class AnalyticsController extends Controller
 
         $pieChartData = $data_books_categories;
 
-        return view("analytics.analytics", compact('totalbooks', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'selectedStore'));
+
+        return view("analytics.analytics", compact('totalbooks','pieChartDataRevenueJson', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'selectedStore', 'categorySumJson', 'scienceFictionSalesJson', 'romanceSalesJson', 'fantasySalesJson', 'nonFictionSalesJson', 'mysterySalesJson'));
+
+
     }
 
 
@@ -339,7 +534,105 @@ class AnalyticsController extends Controller
 
         $pieChartData = $data_books_categories_A;
 
-        return view("analytics.analyticsA", compact('totalbooks', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions'));
+        //$selectedStore = 1; // Gantilah dengan nilai toko yang sesuai
+
+        $categoryRevenueData = DB::connection('mysql_second')
+            ->table('fact_sales')
+            ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+            ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+            ->selectRaw('SUM(fact_sales.Revenue) as revenue, dim_books.category_name')
+            ->where('dim_stores.store_id', 1)
+            ->groupBy('dim_books.category_name')
+            ->get();
+
+        $pieChartDataRevenue = $categoryRevenueData->map(function ($item) {
+            return [
+                'value' => $item->revenue,
+                'name' => $item->category_name,
+            ];
+        });
+
+        $pieChartDataRevenueJson = $pieChartDataRevenue->toJson();
+
+        $categoryOrderSumData = DB::connection('mysql_second')
+            ->table('fact_sales')
+            ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+            ->join('dim_orders', 'fact_sales.sk_order', '=', 'dim_orders.sk_order')
+            ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+            ->selectRaw('SUM(dim_orders.book_qty) as total_book_qty, dim_books.category_name')
+            ->where('dim_stores.store_id', 1)
+            ->groupBy('dim_books.category_name')
+            ->get();
+
+        $categorySum = $categoryOrderSumData->map(function ($item) {
+            return [
+                'value' => $item->total_book_qty,
+                'groupId' => $item->category_name,
+            ];
+        });
+
+        $categorySumJson = $categorySum->toJson();
+
+        $scienceFictionSalesData = $combinedData
+            ->where('store_id', 1)
+            ->where('category_name', 'Science Fiction')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();  
+
+        $romanceSalesData = $combinedData
+            ->where('store_id', 1)
+            ->where('category_name', 'Romance')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();  
+            
+        $fantasySalesData = $combinedData
+            ->where('store_id', 1)
+            ->where('category_name', 'Fantasy')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+            
+        $nonFictionSalesData = $combinedData
+            ->where('store_id', 1)
+            ->where('category_name', 'Non-Fiction')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+            
+        $mysterySalesData = $combinedData
+            ->where('store_id', 1)
+            ->where('category_name', 'Mystery')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+
+
+        // Convert $scienceFictionSalesData to JSON
+        $scienceFictionSalesJson = json_encode($scienceFictionSalesData);
+        $romanceSalesJson = json_encode($romanceSalesData);
+        $fantasySalesJson = json_encode($fantasySalesData);
+        $nonFictionSalesJson = json_encode($nonFictionSalesData);
+        $mysterySalesJson = json_encode($mysterySalesData);
+        
+
+        return view("analytics.analyticsA", compact('totalbooks','pieChartDataRevenueJson', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'categorySumJson', 'scienceFictionSalesJson', 'romanceSalesJson', 'fantasySalesJson', 'nonFictionSalesJson', 'mysterySalesJson'));
     }
 
     public function analyticsB()
@@ -495,6 +788,104 @@ class AnalyticsController extends Controller
         }
 
         $pieChartData = $data_books_categories_B;
-        return view("analytics.analyticsB", compact('totalbooks', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions'));
+
+        //$selectedStore = 2; // Gantilah dengan nilai toko yang sesuai
+
+        $categoryRevenueData = DB::connection('mysql_second')
+            ->table('fact_sales')
+            ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+            ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+            ->selectRaw('SUM(fact_sales.Revenue) as revenue, dim_books.category_name')
+            ->where('dim_stores.store_id', 2)
+            ->groupBy('dim_books.category_name')
+            ->get();
+
+        $pieChartDataRevenue = $categoryRevenueData->map(function ($item) {
+            return [
+                'value' => $item->revenue,
+                'name' => $item->category_name,
+            ];
+        });
+
+        $pieChartDataRevenueJson = $pieChartDataRevenue->toJson();
+
+        $categoryOrderSumData = DB::connection('mysql_second')
+            ->table('fact_sales')
+            ->join('dim_books', 'fact_sales.sk_books', '=', 'dim_books.sk_books')
+            ->join('dim_orders', 'fact_sales.sk_order', '=', 'dim_orders.sk_order')
+            ->join('dim_stores', 'fact_sales.sk_stores', '=', 'dim_stores.sk_stores')
+            ->selectRaw('SUM(dim_orders.book_qty) as total_book_qty, dim_books.category_name')
+            ->where('dim_stores.store_id', 2)
+            ->groupBy('dim_books.category_name')
+            ->get();
+
+        $categorySum = $categoryOrderSumData->map(function ($item) {
+            return [
+                'value' => $item->total_book_qty,
+                'groupId' => $item->category_name,
+            ];
+        });
+
+        $categorySumJson = $categorySum->toJson();
+
+        $scienceFictionSalesData = $combinedData
+            ->where('store_id', 2)
+            ->where('category_name', 'Science Fiction')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();  
+
+        $romanceSalesData = $combinedData
+            ->where('store_id', 2)
+            ->where('category_name', 'Romance')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();  
+            
+        $fantasySalesData = $combinedData
+            ->where('store_id', 2)
+            ->where('category_name', 'Fantasy')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+            
+        $nonFictionSalesData = $combinedData
+            ->where('store_id', 2)
+            ->where('category_name', 'Non-Fiction')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+            
+        $mysterySalesData = $combinedData
+            ->where('store_id', 2)
+            ->where('category_name', 'Mystery')
+            ->groupBy('book_name')
+            ->map(function ($salesData, $bookName) {
+                return [$bookName, $salesData->sum('book_qty')];
+            })
+            ->values()
+            ->toArray();
+
+
+        // Convert $scienceFictionSalesData to JSON
+        $scienceFictionSalesJson = json_encode($scienceFictionSalesData);
+        $romanceSalesJson = json_encode($romanceSalesData);
+        $fantasySalesJson = json_encode($fantasySalesData);
+        $nonFictionSalesJson = json_encode($nonFictionSalesData);
+        $mysterySalesJson = json_encode($mysterySalesData);
+
+        return view("analytics.analyticsB", compact('totalbooks','pieChartDataRevenueJson', 'pieChartData', 'totalorders', 'totalrevenue', 'regulerCount', 'memberCount', 'totalreturn', 'chartData', 'chartOptions', 'categorySumJson', 'scienceFictionSalesJson', 'romanceSalesJson', 'fantasySalesJson', 'nonFictionSalesJson', 'mysterySalesJson'));
     }
 }

@@ -352,6 +352,7 @@
     <script src="{{ asset('js/bs-init.js') }}"></script>
     <script src="{{ asset('js/theme.js') }}"></script>
     <script src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -419,6 +420,225 @@
             });
         });
     </script>
+
+
+    <script>
+        var dom = document.getElementById('category-revenue');
+        var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        option = {
+            legend: {
+                top: 'bottom'
+            },
+            series: [
+                {
+                    name: 'Nightingale Chart',
+                    type: 'pie',
+                    radius: [50, 100],
+                    center: ['50%', '50%'],
+                    roseType: 'area',
+                    label: {
+                        show: true,
+                        formatter: function(params) {
+                            return params.name + '\n' + params.percent + '%\n' + params.value;
+                        },
+                    },
+                    itemStyle: {
+                        borderRadius: 8,
+                        color: function(params) {
+                            var colorMap = {
+                                'Non-Fiction': '#5C7AEA',       // Pastel Dark Blue
+                                'Mystery': '#6CD4A3',           // Pastel Light Green
+                                'Science Fiction': '#FBE199',   // Pastel Yellow
+                                'Romance': '#FAA485',           // Pastel Orange
+                                'Fantasy': '#F9BAC8'            // Pastel Pink
+                            };
+                            return colorMap[params.name] || '#999';  // Default color
+                        }
+                    },
+                    data: {!! $pieChartDataRevenueJson !!}
+                }
+            ]
+        };
+
+
+
+        if (option && typeof option === 'object') {
+        myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    </script>
+
+    <script>
+        var dom = document.getElementById('chart-categories');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+
+        var categorySumData = {!! $categorySumJson !!};
+
+        // Urutkan categorySumData berdasarkan nilai 'value' secara descending
+        categorySumData.sort(function(a, b) {
+            return b.value - a.value;
+        });
+
+        var initialOption = {
+            xAxis: {
+                data: categorySumData.map(function(item) {
+                    return item.groupId;
+                })
+            },
+            yAxis: {},
+            dataGroupId: '',
+            animationDurationUpdate: 500,
+            series: {
+                type: 'bar',
+                id: 'sales',
+                data: categorySumData,
+                itemStyle: {
+                    color: function (params) {
+                        var colorMap = {
+                            'Non-Fiction': '#5C7AEA',
+                            'Mystery': '#6CD4A3',
+                            'Science Fiction': '#FBE199',
+                            'Romance': '#FAA485',
+                            'Fantasy': '#F9BAC8'
+                        };
+                        return colorMap[params.data.groupId];
+                    }
+                },
+                universalTransition: {
+                    enabled: true,
+                    divideShape: 'clone'
+                }
+            }
+        };
+
+        // Urutkan categorySumData berdasarkan nilai 'value' secara descending
+        categorySumData.sort(function(a, b) {
+            return b.value - a.value;
+        });
+
+        // ...
+
+        const drilldownData = [
+            {
+                dataGroupId: 'Science Fiction',
+                data: {!! $scienceFictionSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Fantasy',
+                data: {!! $fantasySalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Romance',
+                data: {!! $romanceSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Non-Fiction',
+                data: {!! $nonFictionSalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            },
+            {
+                dataGroupId: 'Mystery',
+                data: {!! $mysterySalesJson !!}.sort(function(a, b) {
+                    return b[1] - a[1];
+                })
+            }
+        ];
+
+        myChart.on('click', function (event) {
+            if (event.data) {
+                var subData = drilldownData.find(function (data) {
+                    return data.dataGroupId === event.data.groupId;
+                });
+                if (subData) {
+                    var modifiedOption = {
+                        xAxis: {
+                            data: subData.data.map(function (item) {
+                                // Mengambil hanya 4 huruf pertama dari judul buku
+                                var truncatedTitle = item[0].substring(0, 6);
+
+                                // Menambahkan tanda titik-titik jika judul lebih panjang dari 4 huruf
+                                truncatedTitle = item[0].length > 4 ? truncatedTitle + '..' : truncatedTitle;
+
+                                return truncatedTitle;
+                            })
+                        },
+                        series: {
+                            type: 'bar',
+                            id: 'sales',
+                            dataGroupId: subData.dataGroupId,
+                            data: subData.data.map(function (item) {
+                                return {
+                                    value: item[1],
+                                    groupId: event.data.groupId
+                                };
+                            }),
+                            universalTransition: {
+                                enabled: true,
+                                divideShape: 'clone'
+                            }
+                        },
+                        graphic: [
+                            {
+                                type: 'text',
+                                left: 50,
+                                top: 20,
+                                style: {
+                                    text: 'Categories',
+                                    fontSize: 14,
+                                    color: '#6CD4A3',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                },
+                                onclick: function () {
+                                    myChart.setOption(initialOption);
+                                }
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(modifiedOption);
+                }
+            } else {
+                var existingGraphic = myChart.getModel().getOption().graphic;
+                if (existingGraphic) {
+                    existingGraphic.splice(0, 1);
+                    myChart.setOption({
+                        graphic: existingGraphic
+                    });
+                }
+            }
+        });
+
+        if (initialOption && typeof initialOption === 'object') {
+            myChart.setOption(initialOption);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    </script>
+
+
+
+
+
 
 
 </body>
